@@ -1,12 +1,12 @@
 import tvm
 
 n = 1024
-A = tvm.placeholder((n, n), name='A')
-B = tvm.placeholder((n, n), name='B')
+A = tvm.te.placeholder((n, n), name='A')
+B = tvm.te.placeholder((n, n), name='B')
 K = tvm.reduce_axis((0, n), name='K')
-C = tvm.compute((n, n), lambda i, j: tvm.sum(A[i, K] * B[K, j], axis=K), name='C')
+C = tvm.te.compute((n, n), lambda i, j: tvm.te.sum(A[i, K] * B[K, j], axis=K), name='C')
 
-s = tvm.create_schedule(C.op)
+s = tvm.te.create_schedule(C.op)
 
 print(tvm.lower(s, [A, B, C], simple_mode=True))
 print("---------cutting line---------")

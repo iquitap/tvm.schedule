@@ -3,10 +3,10 @@ import tvm
 n = 1024
 dtype = "float32"
 k = tvm.reduce_axis((0, n), name='k')
-A = tvm.placeholder((n, n), dtype=dtype, name='A')
-B = tvm.compute((n,), lambda i: tvm.sum(A[i, k], axis=k), name='B')
+A = tvm.te.placeholder((n, n), dtype=dtype, name='A')
+B = tvm.te.compute((n,), lambda i: tvm.te.sum(A[i, k], axis=k), name='B')
 
-s = tvm.create_schedule(B.op)
+s = tvm.te.create_schedule(B.op)
 
 print(tvm.lower(s, [A, B], simple_mode=True))
 print("---------cutting line---------")

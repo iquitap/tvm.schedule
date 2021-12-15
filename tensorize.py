@@ -1,17 +1,17 @@
 import tvm
 
 N, M, L = 1024, 512, 64
-A = tvm.placeholder((N, L), name='A')
-B = tvm.placeholder((M, L), name='B')
+A = tvm.te.placeholder((N, L), name='A')
+B = tvm.te.placeholder((M, L), name='B')
 k = tvm.reduce_axis((0, L), name='k')
-C = tvm.compute((N, M), lambda i, j: tvm.sum(A[i, k] * B[j, k], axis=k), name='C')
-s = tvm.create_schedule(C.op)
+C = tvm.te.compute((N, M), lambda i, j: tvm.te.sum(A[i, k] * B[j, k], axis=k), name='C')
+s = tvm.te.create_schedule(C.op)
 
 def intrin_gemv(m, l):
-    a = tvm.placeholder((l,), name='a')
-    b = tvm.placeholder((m, l), name='b')
+    a = tvm.te.placeholder((l,), name='a')
+    b = tvm.te.placeholder((m, l), name='b')
     k = tvm.reduce_axis((0, l), name='k')
-    c =  tvm.compute((m,), lambda i: tvm.sum(a[k] * b[i, k], axis=k), name='c')
+    c =  tvm.te.compute((m,), lambda i: tvm.te.sum(a[k] * b[i, k], axis=k), name='c')
     Abuf = tvm.decl_buffer(a.shape, a.dtype, name='A', offset_factor=1, strides=[1])
     Bbuf = tvm.decl_buffer(b.shape, b.dtype, name='B', offset_factor=1, strides=[tvm.var("s1"), 1])
     Cbuf = tvm.decl_buffer(c.shape, c.dtype, name='C', offset_factor=1, strides=[1])

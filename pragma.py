@@ -2,13 +2,13 @@ import tvm
 
 n = 1024
 m = 1024
-A = tvm.placeholder((n, m), name='A')
+A = tvm.te.placeholder((n, m), name='A')
 k = tvm.reduce_axis((0, n), name='k')
 l = tvm.reduce_axis((0, m), name = 'l')
 
-B = tvm.compute((n,), lambda i: tvm.sum(A[i, l], axis=l), name='B')
+B = tvm.te.compute((n,), lambda i: tvm.te.sum(A[i, l], axis=l), name='B')
 
-s = tvm.create_schedule(B.op)
+s = tvm.te.create_schedule(B.op)
 
 ko, ki = s[B].split(B.op.reduce_axis[0], factor=4)
 
